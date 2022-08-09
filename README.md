@@ -1,2 +1,2 @@
 # scala-training-recursion
-Scala training on Recursion
+Scala training: Scala basics and Recursion
