@@ -1,7 +1,7 @@
 package io.turntabl
 package functions.warmUp
 
-object LengthOfStrings {
+object QuestionOne {
 
   val findLengthOfStringLongHand = new Function5[String, String, String, String, String, Int] {
     def apply(a: String, b: String, c: String, d: String, e: String): Int = a.length + b.length + c.length + d.length + e.length
