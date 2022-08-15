@@ -25,7 +25,7 @@ object Intro {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  val multiplySome: (Int, Int, Int) => Int = (a: Int, b: Int, c: Int) => a + b + c
+//  val multiplySome: (Int, Int, Int) => Int = (a: Int, b: Int, c: Int) => a + b + c
 
   ////////////////////////////////////////////////////////////////////////////////////////
   val shortSyntax: (Int, Int, Int) => Int = _ * _ *  2 + _

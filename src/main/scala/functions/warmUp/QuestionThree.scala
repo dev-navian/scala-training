@@ -21,13 +21,13 @@ object QuestionThree {
 
 //  def lengthOfAString(str: String): String => Int = (str) => str.length
 
-  val double: Int => Int = (i: Int) => i * 2
-
-  val lengthOfString: String => Int = (str: String) => str.length
-
-  val multiplyLengthOfStringNTimes: (Int, String => Int) => Int = (num: Int, func: String => Int) => num * func
-
-  val someFunc = (str: String, fn: (Int, String => Int) => Int) => (fn , str.length)
+//  val double: Int => Int = (i: Int) => i * 2
+//
+//  val lengthOfString: String => Int = (str: String) => str.length
+//
+//  val multiplyLengthOfStringNTimes: (Int, String => Int) => Int = (num: Int, func: String => Int) => num * func
+//
+//  val someFunc = (str: String, fn: (Int, String => Int) => Int) => (fn , str.length)
 
 //  def lengthOfAString(str: String): Int = str.length
 //
