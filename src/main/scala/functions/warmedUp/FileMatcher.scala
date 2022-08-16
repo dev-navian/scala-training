@@ -46,7 +46,8 @@ object FileMatcher {
       if (regexOp(query).isEmpty) {
         containingOrEndingOp(query, filesHere)
       } else {
-        regexOp(query) | containingOrEndingOp(query, filesHere)
+        regexOp(query)
+        containingOrEndingOp(query, filesHere)
       }
 
   }
