@@ -1,7 +1,7 @@
 package io.turntabl
 package patternMatching.warmpUp
 
-object QuestionTwo {
+object QuestionTwo extends App {
 
   def listMatcher(listOfNumbers: List[Int]): Int = {
 
