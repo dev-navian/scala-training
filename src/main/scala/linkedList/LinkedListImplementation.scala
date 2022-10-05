@@ -1,6 +1,8 @@
 package io.turntabl
 package linkedList
 
+import scala.annotation.tailrec
+
 // trait with covariance behaviour
 sealed trait SomeLinkedList[+T] {
   def head: T
@@ -12,7 +14,12 @@ sealed trait SomeLinkedList[+T] {
 
   def length: Int
   def map[B](f: (T => B)): SomeLinkedList[B]
+  def flatMap[B](f: T => SomeLinkedList[B]): SomeLinkedList[B]
   def forEach(f: T => Unit): Unit
+  def filter(f: T => Boolean): SomeLinkedList[T]
+  def fold[S >: T](start: S)(operator: (S, S) => S): S
+  def ++[S >: T](list: SomeLinkedList[S]): SomeLinkedList[S]
+  def reverse: SomeLinkedList[T]
 }
 
 case object EmptyList extends SomeLinkedList[Nothing] {
@@ -30,7 +37,18 @@ case object EmptyList extends SomeLinkedList[Nothing] {
 
   override def map[B](f: Nothing => B): SomeLinkedList[B] = throw new NoSuchElementException("Cannot perform map on an empty list")
 
+  override def flatMap[B](f: Nothing => SomeLinkedList[B]): SomeLinkedList[B] = EmptyList
+
   override def forEach(f: Nothing => Unit): Unit = throw new NoSuchElementException("Cannot perform forEach on an empty list")
+
+  override def filter(f: Nothing => Boolean): SomeLinkedList[Nothing] = EmptyList
+
+  override def ++[S >: Nothing](list: SomeLinkedList[S]): SomeLinkedList[S] = EmptyList
+
+  override def reverse: SomeLinkedList[Nothing] = EmptyList
+
+
+  override def fold[S >: Nothing](start: S)(operator: (S, S) => S): S = throw new NoSuchElementException("Cannot perform fold operation on an empty list")
 }
 
 case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T] {
@@ -50,11 +68,31 @@ case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T]
 
   override def map[B](f: T => B): SomeLinkedList[B] = f(head) :: tail.map(f)
 
+  override def flatMap[B](f: T => SomeLinkedList[B]): SomeLinkedList[B] = f(head) ++ tail.flatMap(f)
+
   override def forEach(f: T => Unit): Unit = {
       f(head)
       tail.forEach(f)
   }
 
+  override def filter(f: T => Boolean): SomeLinkedList[T] =
+    if (f(head)) head :: tail.filter(f)
+    else tail.filter(f)
+
+  override def ++[S >: T](list: SomeLinkedList[S]): SomeLinkedList[S] = NonEmptyList(h, t ++ list)
+
+  override def reverse: SomeLinkedList[T] = {
+    @tailrec
+    def reverseAcc(currList: SomeLinkedList[T], reversedList: SomeLinkedList[T]): SomeLinkedList[T] = {
+      if (currList.isEmpty) reversedList
+      else reverseAcc(currList.tail, currList.head :: reversedList)
+    }
+    reverseAcc(this, EmptyList)
+  }
+
+  override def fold[S >: T](start: S)(operator: (S, S) => S): S =
+    if (isEmpty) start
+    else tail.fold(operator(start, head))(operator)
 }
 
 
@@ -87,7 +125,6 @@ object SomeLinkedList {
 //    println(mapped)
 
 
-//    val someL = List(1, 2, 3, 4).map(e => e * 2)
   }
 
 }
