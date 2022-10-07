@@ -17,9 +17,16 @@ sealed trait SomeLinkedList[+T] {
   def flatMap[B](f: T => SomeLinkedList[B]): SomeLinkedList[B]
   def forEach(f: T => Unit): Unit
   def filter(f: T => Boolean): SomeLinkedList[T]
+
   def fold[S >: T](start: S)(operator: (S, S) => S): S
   def ++[S >: T](list: SomeLinkedList[S]): SomeLinkedList[S]
   def reverse: SomeLinkedList[T]
+  def reduce[S >: T](operator: (S, S) => S): S
+
+  def zip[S](list: SomeLinkedList[S]): SomeLinkedList[(T,S)]
+  def zipWith[R, S](list: SomeLinkedList[R], zip:(T,R) => S): SomeLinkedList[S]
+  def zipWithIndex: SomeLinkedList[(T, Int)]
+
 }
 
 case object EmptyList extends SomeLinkedList[Nothing] {
@@ -47,8 +54,15 @@ case object EmptyList extends SomeLinkedList[Nothing] {
 
   override def reverse: SomeLinkedList[Nothing] = EmptyList
 
+  override def fold[S >: Nothing](start: S)(operator: (S, S) => S): S = start
 
-  override def fold[S >: Nothing](start: S)(operator: (S, S) => S): S = throw new NoSuchElementException("Cannot perform fold operation on an empty list")
+  override def reduce[S >: Nothing](operator: (S, S) => S): S = throw new NoSuchElementException("Cannot perform reduce on an empty linked list")
+
+  override def zip[S](list: SomeLinkedList[S]): SomeLinkedList[(Nothing, S)] = EmptyList
+
+  override def zipWithIndex: SomeLinkedList[(Nothing, Int)] = EmptyList
+
+  override def zipWith[R, S](list: SomeLinkedList[R], zip: (Nothing, R) => S): SomeLinkedList[S] = EmptyList
 }
 
 case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T] {
@@ -71,8 +85,8 @@ case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T]
   override def flatMap[B](f: T => SomeLinkedList[B]): SomeLinkedList[B] = f(head) ++ tail.flatMap(f)
 
   override def forEach(f: T => Unit): Unit = {
-      f(head)
-      tail.forEach(f)
+    f(head)
+    tail.forEach(f)
   }
 
   override def filter(f: T => Boolean): SomeLinkedList[T] =
@@ -87,20 +101,47 @@ case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T]
       if (currList.isEmpty) reversedList
       else reverseAcc(currList.tail, currList.head :: reversedList)
     }
+
     reverseAcc(this, EmptyList)
   }
 
   override def fold[S >: T](start: S)(operator: (S, S) => S): S =
     if (isEmpty) start
     else tail.fold(operator(start, head))(operator)
-}
 
+  override def reduce[S >: T](operator: (S, S) => S): S =
+    if (length < 2) head
+    else tail.tail.fold(operator(head, tail.head))(operator)
+
+    /*
+      x = List(1, 2, 3, 4, 5)
+      y = List(a, b, c, d, e, f,)
+      x.zip(y) = List((1, a), (2, b), (3, c), (4, d), (5, e))
+     */
+  override def zip[S](list: SomeLinkedList[S]): SomeLinkedList[(T, S)] = {
+    if (list.isEmpty) EmptyList
+    else (head, list.head) :: tail.zip(list.tail)
+  }
+
+  override def zipWith[R, S](list: SomeLinkedList[R], zip: (T, R) => S): SomeLinkedList[S] =
+    if (list.isEmpty) EmptyList
+    else zip(head, list.head) :: tail.zipWith(list.tail, zip)
+
+  override def zipWithIndex: SomeLinkedList[(T, Int)] = {
+    val indexes = 0 until(this.length)
+
+    val indexesAsList = SomeLinkedList(indexes :_*)
+
+    this.zip(indexesAsList)
+  }
+
+}
 
 object SomeLinkedList {
 
   def apply[T](items: T*): SomeLinkedList[T] = {
     if (items.isEmpty) EmptyList
-    else NonEmptyList(items.head, apply(items.tail: _*))
+    else NonEmptyList(items.head, apply(items.tail :_*))
   }
 
   def main(args: Array[String]): Unit = {
