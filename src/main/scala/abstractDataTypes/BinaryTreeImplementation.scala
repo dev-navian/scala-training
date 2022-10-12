@@ -1,8 +1,6 @@
 package io.turntabl
 package abstractDataTypes
 
-import scala.annotation.tailrec
-
 // trait with contravariance behaviour
 sealed trait BinaryTree[+T] {
   def value: T
@@ -43,15 +41,6 @@ case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTre
 object BinaryTree {
 
   def main(args: Array[String]): Unit = {
-    val firstLeaf = Leaf;
-
-    val firstBranch: BinaryTree[Int] = Branch(
-        2,
-      Branch(3, Leaf, Leaf),
-      Branch(4, Branch(5, Leaf, Leaf), Leaf)
-    )
-    println(firstBranch)
-    println(firstBranch.size)
 
   }
 
