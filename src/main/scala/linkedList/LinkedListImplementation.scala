@@ -17,6 +17,7 @@ sealed trait SomeLinkedList[+T] {
   def flatMap[B](f: T => SomeLinkedList[B]): SomeLinkedList[B]
   def forEach(f: T => Unit): Unit
   def filter(f: T => Boolean): SomeLinkedList[T]
+  def filterNot(f: T => Boolean): SomeLinkedList[T] = filter(!f(_))
 
   def fold[S >: T](start: S)(operator: (S, S) => S): S
   def ++[S >: T](list: SomeLinkedList[S]): SomeLinkedList[S]
@@ -27,6 +28,8 @@ sealed trait SomeLinkedList[+T] {
   def zipWith[R, S](list: SomeLinkedList[R], zip:(T,R) => S): SomeLinkedList[S]
   def zipWithIndex: SomeLinkedList[(T, Int)]
 
+  def partition(predicate: T => Boolean): (SomeLinkedList[T], SomeLinkedList[T])
+  def sort(compare:(T, T) => Int): SomeLinkedList[T]
 }
 
 case object EmptyList extends SomeLinkedList[Nothing] {
@@ -63,6 +66,10 @@ case object EmptyList extends SomeLinkedList[Nothing] {
   override def zipWithIndex: SomeLinkedList[(Nothing, Int)] = EmptyList
 
   override def zipWith[R, S](list: SomeLinkedList[R], zip: (Nothing, R) => S): SomeLinkedList[S] = EmptyList
+
+  override def partition(predicate: Nothing => Boolean): (SomeLinkedList[Nothing], SomeLinkedList[Nothing]) = (EmptyList, EmptyList)
+
+  override def sort(compare: (Nothing, Nothing) => Int): SomeLinkedList[Nothing] = EmptyList
 }
 
 case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T] {
@@ -135,6 +142,35 @@ case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T]
     this.zip(indexesAsList)
   }
 
+  override def partition(predicate: T => Boolean): (SomeLinkedList[T], SomeLinkedList[T]) = {
+      // solution 1
+//    (this filter predicate, this filterNot predicate)
+
+    // solution 2 - tail recursion
+    @tailrec
+    def partitionList(remainder: SomeLinkedList[T], pred: T => Boolean, partitioned: (SomeLinkedList[T], SomeLinkedList[T])): (SomeLinkedList[T], SomeLinkedList[T]) = {
+      if (remainder.isEmpty) partitioned
+      else {
+        if(pred(remainder.head)) partitionList(remainder.tail, pred, (remainder.head :: partitioned._1, partitioned._2))
+        else partitionList(remainder.tail, pred, (partitioned._1, remainder.head :: partitioned._2))
+      }
+    }
+
+    val result = partitionList(this.reverse, predicate, (EmptyList, EmptyList))
+    (result._1, result._2)
+  }
+
+  override def sort(compare: (T, T) => Int): SomeLinkedList[T] = {
+    def insert(x: T, sortedList: SomeLinkedList[T]): SomeLinkedList[T] = {
+      if (sortedList.isEmpty) x :: sortedList
+      else if (compare(x, sortedList.head) <= 0) x :: sortedList
+      else sortedList.head :: insert(x, sortedList.tail)
+    }
+
+    val sortedList = t.sort(compare)
+    insert(head, sortedList)
+  }
+
 }
 
 object SomeLinkedList {
@@ -161,11 +197,13 @@ object SomeLinkedList {
     val justOne: SomeLinkedList[Int] = 2000 :: 4000 :: 5550 :: EmptyList
 //    println(justOne.length)
 
-//    justOne.forEach(e => println("hello" + e))
-    val mapped = ownListImplementation.map(e => e * e)
-//    println(mapped)
+    val tempList = SomeLinkedList(22, 55, 66, 88, 44, 77, 99, 111, 33)
+    val partitioned = tempList.partition(_ % 2 != 0)
+//
+//    println(s"partitioned list : $partitioned")
 
-
+    val sorted = tempList.sort((a, b) => b - a)
+//    println(s"sorted $sorted")
   }
 
 }
