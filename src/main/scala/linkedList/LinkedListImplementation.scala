@@ -204,6 +204,7 @@ object SomeLinkedList {
 
     val sorted = tempList.sort((a, b) => b - a)
 //    println(s"sorted $sorted")
+
   }
 
 }
