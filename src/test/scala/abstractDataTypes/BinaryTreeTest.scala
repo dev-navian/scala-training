@@ -4,31 +4,32 @@ package abstractDataTypes
 import org.scalatest.funsuite.AnyFunSuite
 
 class BinaryTreeTest extends AnyFunSuite {
-  val firstLeaf: BinaryTree[Nothing] = Leaf;
+  val leaf: BinaryTree[Int] = Leaf(5);
 
-  val firstBranch: BinaryTree[Int] = Branch(
+  val treeOne: Branch[Int] = Branch(
     2,
-    Branch(3, Leaf, Leaf),
-    Branch(4, Branch(5, Leaf, Leaf), Leaf)
+    Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
+    Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
   )
 
-  test("value of a leaf should throw a NoSuchElementException") {
+  test("left child of a leaf should throw a NoSuchElementException") {
     assertThrows[NoSuchElementException] {
-      firstLeaf.value
+      leaf.left
     }
   }
 
   test("should return a valid value of a branch") {
-    assert(firstBranch.value == 2)
-    assert(firstBranch.value != 3)
+    assert(treeOne.value == 2)
+    assert(treeOne.value != 3)
   }
 
-  test("the size of a leaf should return 0") {
-    assert(firstLeaf.size == 0)
+  test("the size of a leaf should return 1") {
+    assert(leaf.size == 1)
+    assert(leaf.size != 0)
   }
 
   test("should return the appropriate size of a branch") {
-    assert(firstBranch.size == 9)
+    assert(treeOne.size == 11)
   }
 
 }
