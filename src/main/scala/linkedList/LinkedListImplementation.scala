@@ -72,6 +72,7 @@ case object EmptyList extends SomeLinkedList[Nothing] {
   override def sort(compare: (Nothing, Nothing) => Int): SomeLinkedList[Nothing] = EmptyList
 }
 
+// Non Empty Linked List
 case class NonEmptyList[T](h: T, t: SomeLinkedList[T]) extends SomeLinkedList[T] {
   override def head: T = h
 
