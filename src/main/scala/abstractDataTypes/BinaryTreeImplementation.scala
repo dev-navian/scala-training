@@ -9,7 +9,7 @@ sealed trait BinaryTree[+T] {
 }
 
 // an Empty Node is also known as a leaf
-case object EmptyNode extends BinaryTree[Nothing] {
+case object Leaf extends BinaryTree[Nothing] {
   override def value: Nothing = throw new NoSuchElementException("Error accessing the value of an empty node")
 
   override def left: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the left child of an empty node")
@@ -18,7 +18,7 @@ case object EmptyNode extends BinaryTree[Nothing] {
 }
 
 // a Node has is made up of three parts: the element itself, a left child node and a right child node
-case class Node[T](l: BinaryTree[T], v: T, r: BinaryTree[T]) extends BinaryTree[T] {
+case class Branch[T](l: BinaryTree[T], v: T, r: BinaryTree[T]) extends BinaryTree[T] {
   override def value: T = v
 
   override def left: BinaryTree[T] = l
