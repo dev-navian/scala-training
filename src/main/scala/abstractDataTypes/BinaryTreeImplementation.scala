@@ -8,6 +8,7 @@ sealed trait BinaryTree[+T] {
   def right: BinaryTree[T]
   def size: Int
   def printElements: String
+  override def toString: String = "[" + printElements + "]"
   def map[B](f:(T => B)): B
 }
 
@@ -38,7 +39,7 @@ case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTre
   override def size: Int = 1 + l.size + r.size
 
   override def printElements: String =
-    "[" + v.toString + ", " + l.printElements + ", " + r.printElements + "]"
+    v.toString + ", " + l.printElements + ", " + r.printElements
 
   override def map[B](f: T => B): B = ???
 }
@@ -46,7 +47,13 @@ case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTre
 object BinaryTree {
 
   def main(args: Array[String]): Unit = {
+    val treeOne: Branch[Int] = Branch(
+      2,
+      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
+      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
+    )
 
+    println(treeOne.printElements)
   }
 
 }
