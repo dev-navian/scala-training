@@ -8,10 +8,10 @@ sealed trait BinaryTree[+T] {
   def right: BinaryTree[T]
   def size: Int
   def printElements: String
-//  def map[B](f:(T => B)): B
+  def map[B](f:(T => B)): B
 }
 
-// an Empty Node is also known as a leaf
+// a childless node is also known as a leaf
 case class Leaf[T](v: T) extends BinaryTree[T] {
   override def value: T = v
 
@@ -23,10 +23,11 @@ case class Leaf[T](v: T) extends BinaryTree[T] {
 
   override def printElements: String = v.toString
 
-//  override def map[B](f: Nothing => B): B = throw new NoSuchElementException("Cannot perform a map operation on an empty node")
+  override def map[B](f: T => B): B = f(value)
+
 }
 
-// a Node has is made up of three parts: the element itself, a left child node and a right child node
+// a branch has is made up of three parts: the element itself, a left child node and a right child node
 case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTree[T] {
   override def value: T = v
 
@@ -39,21 +40,13 @@ case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTre
   override def printElements: String =
     "[" + v.toString + ", " + l.printElements + ", " + r.printElements + "]"
 
+  override def map[B](f: T => B): B = ???
 }
 
 object BinaryTree {
 
   def main(args: Array[String]): Unit = {
 
-//    val treeOne = Branch(
-//      2,
-//      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
-//      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
-//    )
-//
-//    println(treeOne.size)
-//    println(treeOne.printElements)
   }
-
 
 }
