@@ -1,2 +1,2 @@
-# scala-training-recursion
-Scala training: Scala basics and Recursion
+# scala-training
+Scala training 2022
