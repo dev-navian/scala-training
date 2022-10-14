@@ -32,4 +32,18 @@ class BinaryTreeTest extends AnyFunSuite {
     assert(treeOne.size == 6)
   }
 
+  test("should appropriately map treeOne") {
+    val mapped = treeOne.map(_ * 10)
+    val expected = Branch(
+      Branch(Branch(Leaf(80), Leaf(100)), Leaf(110)),
+      Branch(Branch(Leaf(180), Leaf(200)), Leaf(220))
+    )
+
+    assert(mapped == expected)
+  }
+
+  test("should return 89 as the result of a reduce on treeOnea") {
+    val reduced = treeOne.reduce(_ + _)
+    assert(reduced == 89)
+  }
 }
