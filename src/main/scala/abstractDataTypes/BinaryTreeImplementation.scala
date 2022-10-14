@@ -1,6 +1,8 @@
 package io.turntabl
 package abstractDataTypes
 
+import scala.annotation.tailrec
+
 // trait with contravariance behaviour
 sealed trait BinaryTree[+T] {
   def value: T
@@ -9,23 +11,46 @@ sealed trait BinaryTree[+T] {
   def size: Int
   def printElements: String
   override def toString: String = "[" + printElements + "]"
-  def map[B](f:(T => B)): B
+  def map[B](f: T => B): BinaryTree[B]
+  def reduce[S >: T](f: (S, S) => S): S
+  def forEach[S >: T](f: S => Unit): Unit
+}
+
+case object EmptyNode extends BinaryTree[Nothing] {
+  override def value: Nothing = throw new NoSuchElementException("Error accessing the value child of an empty node")
+
+  override def left: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the left child of an empty node")
+
+  override def right: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the right child of an empty node")
+
+  override def size: Int = 0
+
+  override def printElements: String = ""
+
+  override def map[B](f: Nothing => B): BinaryTree[B] = EmptyNode
+
+  override def reduce[S](f: (S, S)=> S): S = throw new NoSuchElementException("Cannot perform reduce on an empty node")
+
+  override def forEach[S](f: S => Unit): Unit = throw new NoSuchElementException("Cannot perform forEach on an empty node")
 }
 
 // a childless node is also known as a leaf
 case class Leaf[T](v: T) extends BinaryTree[T] {
   override def value: T = v
 
-  override def left: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the left child of an empty node")
+  override def left: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the left child of a leaf")
 
-  override def right: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the right child of an empty node")
+  override def right: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the right child of a leaf")
 
   override def size: Int = 1
 
   override def printElements: String = v.toString
 
-  override def map[B](f: T => B): B = f(value)
+  override def map[B](f: T => B): BinaryTree[B] = Leaf(f(value))
 
+  override def reduce[S >: T](f: (S, S) => S): S = value
+
+  override def forEach[S >: T](f: S => Unit): Unit = f(value)
 }
 
 // a branch has is made up of three parts: the element itself, a left child node and a right child node
@@ -41,7 +66,24 @@ case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTre
   override def printElements: String =
     v.toString + ", " + l.printElements + ", " + r.printElements
 
-  override def map[B](f: T => B): B = ???
+  override def map[B](f: T => B): Branch[B] = Branch(f(value), left.map(f), right.map(f))
+
+  override def reduce[S >: T](f: (S, S) => S): S = {
+
+
+//    def reduceAcc(node: BinaryTree[T], f: S => S, acc: S): S = node match {
+//      case Leaf(v) => f(v)
+//      case Branch(v, l, _) => reduceAcc(l, f, v) + reduceAcc(r, f, _)
+//    }
+
+//    reduceAcc(this, value)
+  }
+
+  override def forEach[S >: T](f: S => Unit): Unit = {
+    f(value)
+    left.forEach(f)
+    right.forEach(f)
+  }
 }
 
 object BinaryTree {
@@ -49,11 +91,19 @@ object BinaryTree {
   def main(args: Array[String]): Unit = {
     val treeOne: Branch[Int] = Branch(
       2,
-      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
-      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
+//      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
+      Leaf(7),
+      Leaf(12)
+//      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
     )
+    println(s"treeOne : $treeOne")
 
-    println(treeOne.printElements)
+    val mapped = treeOne.map(_ * 2)
+//    println(s"mapped : $mapped")
+    val reduced = treeOne.reduce((a, b) => a + b)
+    println(s"reduced: $reduced")
+
+//    treeOne.forEach(a => println(s"printing... $a"))
   }
 
 }
