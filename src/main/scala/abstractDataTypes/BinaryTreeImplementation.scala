@@ -1,8 +1,6 @@
 package io.turntabl
 package abstractDataTypes
 
-import scala.annotation.tailrec
-
 // trait with contravariance behaviour
 sealed trait BinaryTree[+T] {
   def value: T
@@ -36,55 +34,55 @@ case class Leaf[T](v: T) extends BinaryTree[T] {
 }
 
 // a branch has is made up of three parts: the element itself, a left child node and a right child node
-case class Branch[T](v: T, l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTree[T] {
-  override def value: T = v
+case class Branch[T](l: BinaryTree[T], r: BinaryTree[T]) extends BinaryTree[T] {
+  override def value: T = throw new NoSuchElementException("No value for a branch")
 
   override def left: BinaryTree[T] = l
 
   override def right: BinaryTree[T] = r
 
-  override def size: Int = 1 + l.size + r.size
+  override def size: Int = left.size + right.size
 
   override def printElements: String =
-    v.toString + ", " + l.printElements + ", " + r.printElements
+    left.printElements + ", " + right.printElements
 
-  override def map[B](f: T => B): Branch[B] = Branch(f(value), left.map(f), right.map(f))
+  override def map[B](f: T => B): Branch[B] = Branch(left.map(f), right.map(f))
 
   override def reduce[S >: T](f: (S, S) => S): S = {
-
-
-//    def reduceAcc(node: BinaryTree[T], f: S => S, acc: S): S = node match {
-//      case Leaf(v) => f(v)
-//      case Branch(v, l, _) => reduceAcc(l, f, v) + reduceAcc(r, f, _)
-//    }
-
-//    reduceAcc(this, value)
+//
+////    def reduceAcc(node: BinaryTree[T], f: S => S, acc: S): S = node match {
+////      case Leaf(v) => f(v)
+////      case Branch(v, l, _) => reduceAcc(l, f, v) + reduceAcc(r, f, _)
+////    }
+//
+////    reduceAcc(this, value)
+    ???
   }
 
   override def forEach[S >: T](f: S => Unit): Unit = {
-    f(value)
     left.forEach(f)
     right.forEach(f)
   }
+
 }
 
 object BinaryTree {
 
   def main(args: Array[String]): Unit = {
     val treeOne: Branch[Int] = Branch(
-      2,
-      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
-      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
+      Branch(Branch(Leaf(2), Leaf(4)), Leaf(6)),
+      Branch(Branch(Leaf(8), Leaf(10)), Leaf(12))
     )
     println(s"treeOne : $treeOne")
+    println(s"size of treeOne: ${treeOne.size}")
 
-    val mapped = treeOne.map(_ * 2)
+//    val leaf: Leaf[Int] = Leaf(100)
+//    leaf.forEach(l => println(s"printing leaf: $l"))
+
+//    val mapped = treeOne.map(_ * 2)
 //    println(s"mapped : $mapped")
-
-    val reduced = treeOne.reduce((a, b) => a + b)
-    println(s"reduced: $reduced")
-
-//    treeOne.forEach(a => println(s"printing... $a"))
+//
+//    treeOne.forEach(a => print(s"printing... $a -- "))
   }
 
 }
