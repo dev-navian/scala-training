@@ -16,24 +16,6 @@ sealed trait BinaryTree[+T] {
   def forEach[S >: T](f: S => Unit): Unit
 }
 
-case object EmptyNode extends BinaryTree[Nothing] {
-  override def value: Nothing = throw new NoSuchElementException("Error accessing the value child of an empty node")
-
-  override def left: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the left child of an empty node")
-
-  override def right: BinaryTree[Nothing] = throw new NoSuchElementException("Error accessing the right child of an empty node")
-
-  override def size: Int = 0
-
-  override def printElements: String = ""
-
-  override def map[B](f: Nothing => B): BinaryTree[B] = EmptyNode
-
-  override def reduce[S](f: (S, S)=> S): S = throw new NoSuchElementException("Cannot perform reduce on an empty node")
-
-  override def forEach[S](f: S => Unit): Unit = throw new NoSuchElementException("Cannot perform forEach on an empty node")
-}
-
 // a childless node is also known as a leaf
 case class Leaf[T](v: T) extends BinaryTree[T] {
   override def value: T = v
@@ -91,15 +73,14 @@ object BinaryTree {
   def main(args: Array[String]): Unit = {
     val treeOne: Branch[Int] = Branch(
       2,
-//      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
-      Leaf(7),
-      Leaf(12)
-//      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
+      Branch(4, Branch(6, Leaf(8), Leaf(10)), Leaf(11)),
+      Branch(13, Branch(15, Leaf(18), Leaf(20)), Leaf(22))
     )
     println(s"treeOne : $treeOne")
 
     val mapped = treeOne.map(_ * 2)
 //    println(s"mapped : $mapped")
+
     val reduced = treeOne.reduce((a, b) => a + b)
     println(s"reduced: $reduced")
 
