@@ -46,4 +46,8 @@ class BinaryTreeTest extends AnyFunSuite {
     val reduced = treeOne.reduce(_ + _)
     assert(reduced == 89)
   }
+
+  test("should return the appropriate maximum depth of a tree") {
+    assert(treeOne.depth == 3)
+  }
 }
