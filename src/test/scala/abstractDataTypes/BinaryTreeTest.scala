@@ -1,6 +1,7 @@
 package io.turntabl
 package abstractDataTypes
 
+import io.turntabl.abstractDataTypes.BinaryTree.maxInt
 import org.scalatest.funsuite.AnyFunSuite
 
 class BinaryTreeTest extends AnyFunSuite {
@@ -8,7 +9,7 @@ class BinaryTreeTest extends AnyFunSuite {
 
   val treeOne: Branch[Int] = Branch(
     Branch(Branch(Leaf(8), Leaf(10)), Leaf(11)),
-    Branch(Branch(Leaf(18), Leaf(20)), Leaf(22))
+    Branch(Branch(Leaf(38), Leaf(20)), Leaf(22))
   )
 
   test("left child of a leaf should throw a NoSuchElementException") {
@@ -36,7 +37,7 @@ class BinaryTreeTest extends AnyFunSuite {
     val mapped = treeOne.map(_ * 10)
     val expected = Branch(
       Branch(Branch(Leaf(80), Leaf(100)), Leaf(110)),
-      Branch(Branch(Leaf(180), Leaf(200)), Leaf(220))
+      Branch(Branch(Leaf(380), Leaf(200)), Leaf(220))
     )
 
     assert(mapped == expected)
@@ -44,10 +45,15 @@ class BinaryTreeTest extends AnyFunSuite {
 
   test("should return 89 as the result of a reduce on treeOnea") {
     val reduced = treeOne.reduce(_ + _)
-    assert(reduced == 89)
+    assert(reduced == 109)
   }
 
   test("should return the appropriate maximum depth of a tree") {
     assert(treeOne.depth == 3)
+  }
+
+  test("should return 38 as the appropriate maximum integer in treeOne") {
+    val maximumInteger = maxInt(treeOne)
+    assert(maximumInteger == 38)
   }
 }
