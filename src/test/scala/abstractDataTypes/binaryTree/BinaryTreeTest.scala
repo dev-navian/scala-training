@@ -1,7 +1,8 @@
 package io.turntabl
-package abstractDataTypes
+package abstractDataTypes.binaryTree
 
-import io.turntabl.abstractDataTypes.BinaryTree.maxInt
+import abstractDataTypes.binaryTree.BinaryTree.maxInt
+
 import org.scalatest.funsuite.AnyFunSuite
 
 class BinaryTreeTest extends AnyFunSuite {

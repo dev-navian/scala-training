@@ -1,7 +1,5 @@
 package io.turntabl
-package abstractDataTypes
-
-import scala.annotation.tailrec
+package abstractDataTypes.binaryTree
 
 // trait with contravariance behaviour
 sealed trait BinaryTree[+T] {

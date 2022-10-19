@@ -1,5 +1,5 @@
 package io.turntabl
-package linkedList
+package abstractDataTypes.linkedList
 
 import scala.annotation.tailrec
 
