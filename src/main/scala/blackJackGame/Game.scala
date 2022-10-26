@@ -27,6 +27,7 @@ object Game {
       value
     }
 
+    // populate player store with player cards
     for (i: Int <- 0 until  numberOfPlayers) yield {
       var playerCards = Array(deck.deal())
       playerCards = playerCards :+ deck.deal()
@@ -37,30 +38,32 @@ object Game {
 
     println(gamePlayers.size)
     println(gamePlayers.mkString("Map[", ", ", "]"))
+    println()
 
-//    for (player <- gamePlayers) {
-//      val cardValues = computeCardsValue(player)
-//
-//      cardValues match {
-//        case x: Int if(x >= 21) => println("Player")
-//      }
-//    }
+    // compute the total of all the cards a player has in a game
+    for (player: (String, Array[Card]) <- gamePlayers) {
+      val cardValues: Int = computeCardsValue(player._2)
 
-    // display player cards
-//    var playerOneCards = Array(deck.deal())
-//    playerOneCards = playerOneCards :+ deck.deal()
-//    println(s"playerOne cards: ${printPlayerCards(playerOneCards)}")
-//    println(s"playerOne cards value: ${computeCardsValue(playerOneCards)}")
-//
-//    var playerTwoCards = Array(deck.deal())
-//    playerTwoCards = playerTwoCards :+ deck.deal()
-//    println(s"playerTwo cards: ${printPlayerCards(playerTwoCards)}")
-//    println(s"playerTwo cards value: ${computeCardsValue(playerTwoCards)}")
-//
-//    var playerThreeCards = Array(deck.deal())
-//    playerThreeCards = playerThreeCards :+ deck.deal()
-//    println(s"playerThree cards: ${printPlayerCards(playerThreeCards)}")
-//    println(s"playerThree cards value: ${computeCardsValue(playerThreeCards)}")
+      println(s"${player._1}'s cards: ${printPlayerCards(player._2)}")
+      println(s"${player._1}'s value: $cardValues")
+
+      cardValues match {
+        case x: Int if(x < 17) => {
+          println(s"${player._1} hits...")
+          println(s"${player._1} gets another card...")
+        }
+        case x: Int if(x >= 17) => {
+          println(s"${player._1} sticks...")
+        }
+        case _ => {
+          println(s"${player._1} goes bust...")
+          println(s"${player._1} is ejected...")
+        }
+      }
+
+      println()
+    }
+
   }
 
 
