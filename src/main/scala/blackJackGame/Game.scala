@@ -8,12 +8,12 @@ object Game {
   def playGame(numberOfPlayers: Int): Unit = {
     println("===== Game Started =====")
 
-    //    println("Enter the number of players you want... (A valid input is a digit between 1 and 6)")
-//    val numberOfPlayers = readInt()
+    // initialize deck
     val deck = Deck()
     deck.initialize()
 
-    var gamePlayers: Array[Array[Card]] = Array()
+    // store of players in the game
+    var gamePlayers: Map[String, Array[Card]] = Map()
 
     // print player cards
     def printPlayerCards(playerCards: Array[Card]): String = playerCards.mkString("[", ", ", "]")
@@ -21,22 +21,30 @@ object Game {
     // compute card values
     def computeCardsValue(playerCards: Array[Card]): Int = {
       var value = 0
-      for (card <- playerCards) {
+      for (card: Card <- playerCards) {
         value += card.value
       }
       value
     }
 
-    for (i <- 0 until  numberOfPlayers) {
+    for (i: Int <- 0 until  numberOfPlayers) yield {
       var playerCards = Array(deck.deal())
       playerCards = playerCards :+ deck.deal()
 
-      gamePlayers = gamePlayers :+ (playerCards)
-      println("populating array... \n")
+      val key: String = "Player" + (i + 1)
+      gamePlayers = gamePlayers.+(key -> playerCards)
     }
 
-    println(gamePlayers.length)
-    println(gamePlayers.mkString("Array(", ", ", ")"))
+    println(gamePlayers.size)
+    println(gamePlayers.mkString("Map[", ", ", "]"))
+
+//    for (player <- gamePlayers) {
+//      val cardValues = computeCardsValue(player)
+//
+//      cardValues match {
+//        case x: Int if(x >= 21) => println("Player")
+//      }
+//    }
 
     // display player cards
 //    var playerOneCards = Array(deck.deal())
