@@ -42,20 +42,20 @@ case class Deck() {
 
 }
 
-object Deck {
-
-  def main(args: Array[String]): Unit = {
-    val deck = new Deck
-    deck.initialize()
-    println(deck.cards.mkString("Array[", ", ", "]"))
-    println(deck.cards.length)
-
-    println()
-
-    deck.shuffle()
-    println(deck.deal())
-    println(deck.deal())
-    println(deck.deal())
-  }
-
-}
+//object Deck {
+//
+//  def main(args: Array[String]): Unit = {
+//    val deck = new Deck
+//    deck.initialize()
+//    println(deck.cards.mkString("Array[", ", ", "]"))
+//    println(deck.cards.length)
+//
+//    println()
+//
+//    deck.shuffle()
+//    println(deck.deal())
+//    println(deck.deal())
+//    println(deck.deal())
+//  }
+//
+//}

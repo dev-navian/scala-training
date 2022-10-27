@@ -5,18 +5,20 @@ import scala.io.StdIn.{readInt, readLine}
 
 object Game {
 
+  // main game play
   def playGame(numberOfPlayers: Int): Unit = {
     println("===== Game Started =====")
 
-    // initialize deck
+    // initialize and shuffle deck
     val deck = Deck()
     deck.initialize()
+    deck.shuffle()
 
     // store of players in the game
     var gamePlayers: Map[String, Array[Card]] = Map()
 
     // print player cards
-    def printPlayerCards(playerCards: Array[Card]): String = playerCards.mkString("[", ", ", "]")
+    def printSinglePlayerCards(playerCards: Array[Card]): String = playerCards.mkString("[", ", ", "]")
 
     // compute card values
     def computeCardsValue(playerCards: Array[Card]): Int = {
@@ -34,7 +36,7 @@ object Game {
     }
 
     // populate player store with player cards
-    for (i: Int <- 0 until  numberOfPlayers) yield {
+    for (i: Int <- 0 until  numberOfPlayers) {
       var playerCards = Array(deck.deal())
       playerCards = playerCards :+ deck.deal()
 
@@ -47,22 +49,28 @@ object Game {
     printGamePlayerCards(gamePlayers)
     println()
 
-    // handle player hitting...
-//    def handlePlayerHitting(player: (String, Array[Card])): Unit = {
-//
-//    }
+    var gamersToNextRound: Map[String, Array[Card]] = Map()
+    var stuckPlayers: Array[String] = Array()
 
     def evaluateRound(gamers: Map[String, Array[Card]]): Unit = {
+      println(s"stuckPlayers Length: ${stuckPlayers.length}")
+      println(s"gamers Size: ${gamers.size}")
 
       if (gamers.size == 1) {
         val remainder: (String, Array[Card]) = gamers.head
         println(s"${remainder._1} WINS!!!")
-        println(s"GAME OVER")
-      } else {
+        println(s"GAME OVER!!!")
+      } // check if all players stick
+      else if (stuckPlayers.length == gamers.size) {
+        println("All players stick...")
+        println("GAME OVER!!!")
+      }
+      else {
+        // compute the value of each player's cards
         for (player: (String, Array[Card]) <- gamers) {
           val cardValues: Int = computeCardsValue(player._2)
 
-          println(s"${player._1}'s cards: ${printPlayerCards(player._2)}")
+          println(s"${player._1}'s cards: ${printSinglePlayerCards(player._2)}")
           println(s"${player._1}'s value: $cardValues")
 
           cardValues match {
@@ -70,22 +78,23 @@ object Game {
               println(s"${player._1} hits...")
               println(s"${player._1} gets another card...")
               println()
+
               val addedCards = player._2 :+ deck.deal()
-              val newGamers = gamers + (player._1 -> addedCards)
-              evaluateRound(newGamers)
-              }
+              gamersToNextRound = gamers + (player._1 -> addedCards)
+            }
             case x: Int if (x >= 17) => {
+              stuckPlayers = stuckPlayers :+ player._1
               println(s"${player._1} sticks...")
             }
             case x: Int if (x == 21) => {
               println(s"${player._1} WINS!!!")
-              println(s"GAME OVER")
+              println(s"GAME OVER!!!")
             }
             case _ => {
               println(s"${player._1} goes bust...")
 
-              val updatedGamePlayers = gamers.-(player._1)
-              evaluateRound(updatedGamePlayers)
+              gamersToNextRound = gamers - (player._1)
+//              evaluateRound(updatedGamePlayers)
 
               println(s"${player._1} is ejected...")
             }
@@ -93,36 +102,14 @@ object Game {
 
           println()
         }
+
+        evaluateRound(gamersToNextRound)
       }
 
     }
 
     evaluateRound(gamePlayers)
 
-    // compute the total of all the cards a player has in a game
-//    for (player: (String, Array[Card]) <- gamePlayers) {
-//      val cardValues: Int = computeCardsValue(player._2)
-//
-//      println(s"${player._1}'s cards: ${printPlayerCards(player._2)}")
-//      println(s"${player._1}'s value: $cardValues")
-//
-//      cardValues match {
-//        case x: Int if (x < 17) =>
-//          println(s"${player._1} hits...")
-//          println(s"${player._1} gets another card...")
-////          player._2 :+ deck.deal()
-//        case x: Int if (x >= 17) =>
-//          println(s"${player._1} sticks...")
-//        case _ =>
-//          println(s"${player._1} goes bust...")
-//          gamePlayers = gamePlayers.-(player._1)
-//          println(s"${player._1} is ejected...")
-//      }
-//
-//      println()
-//    }
-
-    printGamePlayerCards(gamePlayers)
   }
 
 
@@ -134,18 +121,17 @@ object Game {
 
     userResponse match {
       case "Y" =>
-        println("Enter the number of players to play the game. eg. 5")
+        println("Enter the number of players to play the game. ie. between 1 and 6")
 
         val numberOfPlayers: Int = readInt()
         numberOfPlayers match {
-          case x: Int if (x >= 1) && (x <= 6) => playGame(x)
+          case x: Int if (x > 1) && (x <= 6) => playGame(x)
           case _ => println("Sorry. The number of players should be between 1 and 6.")
         }
 
       case "N" => println("Sorry to see you leave. You should try this game.")
       case _ => println("Please enter an appropriate response.")
     }
-
   }
 
 }
